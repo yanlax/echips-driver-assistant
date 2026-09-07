@@ -1,0 +1,50 @@
+name: Build Windows EXE
+
+# Собирает .exe автоматически при каждом push в main, а также вручную
+# по кнопке "Run workflow" на вкладке Actions в GitHub.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    # windows-latest — сборка идёт на сервере GitHub с уже установленными
+    # MSVC Build Tools и Windows SDK. Ваш собственный компьютер (Windows
+    # или Mac) в процессе компиляции вообще не участвует и может быть
+    # выключен — вы просто отправляете код через git push.
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v4
+
+      - name: Установка Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Установка Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Установка Tauri CLI
+        run: cargo install tauri-cli --version "^2.0.0"
+
+      - name: Сборка релизного .exe
+        run: cargo tauri build --no-bundle
+
+      - name: Переименование в красивое имя файла
+        # Cargo/Rust не разрешает пробелы в имени самого бинарника —
+        # обходим это простым переименованием готового файла после сборки.
+        shell: pwsh
+        run: |
+          Copy-Item "src-tauri/target/release/echips-driver-assistant.exe" `
+                    "src-tauri/target/release/Echips Driver Assistant.exe"
+
+      - name: Публикация готового .exe как артефакта
+        # bundle.active выключен в tauri.conf.json — собираем только голый
+        # исполняемый файл, без NSIS-инсталлятора.
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchipsDriverAssistant
+          path: "src-tauri/target/release/Echips Driver Assistant.exe"

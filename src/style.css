@@ -1,0 +1,482 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ============================================================
+   Echips Driver Assistant — редизайн
+   Две темы: тёмная (по умолчанию) и светлая, переключатель
+   в правом верхнем углу. Тема пишется в data-theme на <html>
+   и запоминается в localStorage.
+   Все классы прежние — app.js менять не нужно.
+   ============================================================ */
+
+:root,
+html[data-theme="dark"]{
+  --bg:            #15171B;
+  --bg-glow:       rgba(255,138,0,.10);
+  --sidebar-top:   #1C1F24;
+  --sidebar-bot:   #181A1E;
+  --glass:         rgba(255,255,255,.035);
+  --glass-hover:   rgba(255,255,255,.07);
+  --glass-solid:   rgba(255,255,255,.04);
+  --line:          rgba(255,255,255,.07);
+  --line-soft:     rgba(255,255,255,.06);
+  --line-strong:   rgba(255,255,255,.12);
+  --line-input:    rgba(255,255,255,.09);
+  --ctrl-border:   rgba(255,255,255,.20);
+  --ctrl-border-2: rgba(255,255,255,.22);
+  --track:         rgba(255,255,255,.07);
+  --track-soft:    rgba(255,255,255,.04);
+  --text:          #F2F3F5;
+  --text-hi:       #F4F5F7;
+  --text-2:        #DDDFE3;
+  --text-3:        #C8CBD0;
+  --text-dim:      #8A8F98;
+  --text-mute:     #7C8189;
+  --text-faint:    #6A6E76;
+  --accent:        #FF8A00;
+  --accent-hover:  #FF9C1F;
+  --accent-hi:     #FFB259;
+  --accent-deep:   #B45E06;
+  --accent-ink:    #1A1204;
+  --accent-soft:   rgba(255,138,0,.12);
+  --accent-line:   rgba(255,138,0,.30);
+  --accent-glow:   rgba(255,138,0,.28);
+  --rec-grad:      linear-gradient(90deg,rgba(255,138,0,.18),rgba(255,138,0,.04) 55%,rgba(255,255,255,.03));
+  --cat-grad:      linear-gradient(90deg,rgba(255,138,0,.13),rgba(255,255,255,.03) 60%);
+  --bar-grad:      linear-gradient(90deg,#7A4A17,#FF8A00);
+  --shimmer:       rgba(255,255,255,.35);
+  --shadow-row:    0 6px 20px rgba(0,0,0,.28);
+  --ok:            #4CAF7D;
+  --err:           #E2574C;
+  --err-glow:      rgba(226,87,76,.8);
+  --radius:        12px;
+  color-scheme:    dark;
+}
+
+html[data-theme="light"]{
+  --bg:            #F5F3F0;
+  --bg-glow:       rgba(233,118,0,.12);
+  --sidebar-top:   #FFFFFF;
+  --sidebar-bot:   #F8F6F3;
+  --glass:         rgba(255,255,255,.72);
+  --glass-hover:   #FFFFFF;
+  --glass-solid:   #FFFFFF;
+  --line:          rgba(20,18,16,.10);
+  --line-soft:     rgba(20,18,16,.08);
+  --line-strong:   rgba(20,18,16,.14);
+  --line-input:    rgba(20,18,16,.12);
+  --ctrl-border:   rgba(20,18,16,.24);
+  --ctrl-border-2: rgba(20,18,16,.22);
+  --track:         rgba(20,18,16,.08);
+  --track-soft:    rgba(20,18,16,.05);
+  --text:          #1A1C20;
+  --text-hi:       #191B1F;
+  --text-2:        #2A2D33;
+  --text-3:        #4A4E55;
+  --text-dim:      #6B6F76;
+  --text-mute:     #8A8E95;
+  --text-faint:    #8A8E95;
+  --accent:        #E97600;
+  --accent-hover:  #FF8A00;
+  --accent-hi:     #8A4300;
+  --accent-deep:   #C25E00;
+  --accent-ink:    #2A1602;
+  --accent-soft:   rgba(233,118,0,.13);
+  --accent-line:   rgba(233,118,0,.42);
+  --accent-glow:   rgba(233,118,0,.30);
+  --rec-grad:      linear-gradient(90deg,rgba(233,118,0,.16),rgba(255,255,255,.85) 60%);
+  --cat-grad:      linear-gradient(90deg,rgba(233,118,0,.13),rgba(255,255,255,.85) 60%);
+  --bar-grad:      linear-gradient(90deg,#F0A24A,#E97600);
+  --shimmer:       rgba(255,255,255,.65);
+  --shadow-row:    0 6px 18px rgba(20,18,16,.08);
+  --ok:            #1F7A50;
+  --err:           #C6392C;
+  --err-glow:      rgba(198,57,44,.45);
+  color-scheme:    light;
+}
+
+*{ box-sizing:border-box; }
+html,body{
+  margin:0; height:100%; width:100%;
+  background:var(--bg);
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+  transition:background-color .25s ease;
+}
+.device{ width:100%; height:100vh; background:var(--bg); display:flex; flex-direction:column; }
+.body{ flex:1; display:flex; flex-direction:row; min-height:0; }
+
+/* ============================================================
+   Кастомная шапка окна (замена системной рамки, decorations:false)
+   ============================================================ */
+.titlebar{
+  flex:0 0 32px; display:flex; align-items:stretch;
+  background:var(--sidebar-top); border-bottom:1px solid var(--line-soft);
+  -webkit-app-region:drag;
+  transition:background .25s ease, border-color .25s ease;
+}
+.titlebar-drag{ flex:1; }
+.titlebar-controls{ display:flex; align-items:stretch; -webkit-app-region:no-drag; }
+.titlebar-btn{
+  display:flex; align-items:center; justify-content:center;
+  width:44px; background:transparent; border:none; padding:0;
+  color:var(--text-mute); cursor:pointer;
+  -webkit-app-region:no-drag;
+  transition:background-color .15s, color .15s;
+}
+.titlebar-btn:hover{ background:var(--track); color:var(--text); }
+.titlebar-btn-close:hover{ background:#E81123; color:#fff; }
+.titlebar-btn svg{
+  width:10px; height:10px; display:block;
+  stroke:currentColor; stroke-width:1.2; stroke-linecap:round; fill:none;
+}
+
+/* ---------- Скроллбары в фирменном цвете ---------- */
+.modellist,.catlist,.screen,.filecheck-list,.installed-list{
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent-line) transparent;
+}
+.modellist::-webkit-scrollbar,
+.catlist::-webkit-scrollbar,
+.screen::-webkit-scrollbar,
+.filecheck-list::-webkit-scrollbar,
+.installed-list::-webkit-scrollbar{ width:8px; }
+.modellist::-webkit-scrollbar-track,
+.catlist::-webkit-scrollbar-track,
+.screen::-webkit-scrollbar-track,
+.filecheck-list::-webkit-scrollbar-track,
+.installed-list::-webkit-scrollbar-track{ background:var(--track-soft); border-radius:8px; }
+.modellist::-webkit-scrollbar-thumb,
+.catlist::-webkit-scrollbar-thumb,
+.screen::-webkit-scrollbar-thumb,
+.filecheck-list::-webkit-scrollbar-thumb,
+.installed-list::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--accent),var(--accent-deep));
+  border-radius:8px; border:2px solid transparent; background-clip:padding-box;
+}
+.modellist::-webkit-scrollbar-thumb:hover,
+.catlist::-webkit-scrollbar-thumb:hover,
+.screen::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,var(--accent-hover),var(--accent)); background-clip:padding-box;
+}
+
+/* ============================================================
+   Левая панель
+   ============================================================ */
+.sidebar{
+  flex:0 0 224px;
+  background:linear-gradient(180deg,var(--sidebar-top),var(--sidebar-bot));
+  border-right:1px solid var(--line-soft);
+  display:flex; flex-direction:column;
+  padding:20px 14px 16px;
+  -webkit-app-region:drag;
+  transition:background .25s ease, border-color .25s ease;
+}
+.brand{ display:flex; align-items:center; gap:11px; padding:0 6px; margin-bottom:26px; }
+.mark{ width:28px; height:28px; object-fit:contain; flex:0 0 auto; }
+.brandtext .h{ font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:600; color:var(--text); line-height:1.25; }
+.brandtext .s{ font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-mute); margin-top:3px; }
+
+.steps{ flex:1; display:flex; flex-direction:column; gap:3px; -webkit-app-region:no-drag; }
+.step{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 10px; border-radius:9px;
+  font-size:12.5px; color:var(--text-mute);
+  box-shadow:inset 0 0 0 1px transparent;
+  transition:background .18s, color .18s, box-shadow .18s;
+}
+.step .dot{
+  width:7px; height:7px; border-radius:50%; flex:0 0 auto;
+  background:transparent; border:1.5px solid var(--ctrl-border);
+  transition:.18s;
+}
+.step.active{ color:var(--text); background:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--accent-line); }
+.step.active .dot{ background:var(--accent); border-color:var(--accent); box-shadow:0 0 8px var(--accent-glow); }
+
+.sidebar .footer{
+  flex:0 0 auto; display:flex; align-items:center; gap:6px;
+  padding:14px 8px 0; border-top:1px solid var(--line);
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  -webkit-app-region:no-drag;
+}
+.footer .c{ color:var(--text-faint); }
+.footer a,.footer-link{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; transition:color .15s; }
+.footer a:hover,.footer-link:hover{ color:var(--accent-deep); }
+.footer-link{ background:none; border:none; font-family:'JetBrains Mono',monospace; font-size:10px; cursor:pointer; padding:0; }
+
+/* Подсветка активного шага по содержимому #screen */
+.body:has(#screen .hexwrap:not(.progwrap .hexwrap)) .step[data-step="1"],
+.body:has(#screen .modellist) .step[data-step="2"],
+.body:has(#screen .catlist) .step[data-step="2"],
+.body:has(#screen .restore-toggle) .step[data-step="2"],
+.body:has(#screen .progwrap) .step[data-step="3"],
+.body:has(#screen .resultwrap:not(.is-error)) .step[data-step="4"]{
+  color:var(--text); background:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--accent-line);
+}
+.body:has(#screen .hexwrap:not(.progwrap .hexwrap)) .step[data-step="1"] .dot,
+.body:has(#screen .modellist) .step[data-step="2"] .dot,
+.body:has(#screen .catlist) .step[data-step="2"] .dot,
+.body:has(#screen .restore-toggle) .step[data-step="2"] .dot,
+.body:has(#screen .progwrap) .step[data-step="3"] .dot,
+.body:has(#screen .resultwrap:not(.is-error)) .step[data-step="4"] .dot{
+  background:var(--accent); border-color:var(--accent); box-shadow:0 0 8px var(--accent-glow);
+}
+
+/* ============================================================
+   Рабочая область
+   ============================================================ */
+.content{ flex:1; min-width:0; display:flex; flex-direction:column; position:relative; }
+.screen{
+  flex:1; min-height:0; padding:24px 26px 22px;
+  display:flex; flex-direction:column; overflow-y:auto;
+  background:radial-gradient(110% 80% at 100% 0%,var(--bg-glow),transparent 62%),var(--bg);
+  transition:background-color .25s ease;
+}
+
+/* ---------- Переключатель темы (правый верхний угол) ---------- */
+.theme-toggle{
+  position:absolute; top:16px; right:20px; z-index:20;
+  display:flex; align-items:center; gap:2px; padding:3px;
+  background:var(--glass); border:1px solid var(--line-input);
+  border-radius:999px; backdrop-filter:blur(10px);
+  -webkit-app-region:no-drag;
+  transition:background-color .2s, border-color .2s;
+}
+.theme-toggle:hover{ border-color:var(--accent-line); }
+.theme-toggle button{
+  display:flex; align-items:center; justify-content:center;
+  width:28px; height:24px; padding:0;
+  background:transparent; border:none; border-radius:999px;
+  color:var(--text-mute); cursor:pointer;
+  transition:background-color .18s, color .18s, box-shadow .18s;
+}
+.theme-toggle button:hover{ color:var(--text); background:var(--track); }
+.theme-toggle button[aria-pressed="true"]{
+  background:var(--accent); color:var(--accent-ink);
+  box-shadow:0 2px 10px var(--accent-glow);
+}
+.theme-toggle svg{ width:14px; height:14px; display:block; }
+
+/* ---------- Заголовки ---------- */
+.eyebrow{
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-mute);
+  letter-spacing:.09em; text-transform:uppercase;
+}
+.modelname{
+  font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:600;
+  color:var(--text-hi); line-height:1.15; margin:7px 0 16px; padding-right:80px;
+}
+/* app.js местами задаёт font-size инлайном (19px) */
+#screen .modelname[style]{ font-size:24px !important; }
+
+.diag{ display:flex; align-items:baseline; gap:10px; margin-bottom:18px; }
+.diag .num{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); }
+.diag .lbl{ font-size:12px; color:var(--text-dim); }
+.empty{ font-size:13px; color:var(--text-dim); line-height:1.55; margin-bottom:20px; }
+
+/* ---------- Шестиугольник ---------- */
+.hexwrap{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:26px; }
+.hex{ width:80px; height:80px; position:relative; }
+.hex svg{ width:100%; height:100%; display:block; }
+.hex .track{ fill:none; stroke:var(--track); stroke-width:3; }
+.hex .fill{
+  fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round;
+  stroke-dasharray:228; filter:drop-shadow(0 0 8px var(--accent-glow));
+}
+.hexwrap::before{
+  content:''; position:absolute; width:220px; height:220px; border-radius:50%;
+  background:radial-gradient(circle,var(--accent-soft),transparent 62%);
+  animation:glowpulse 2.4s ease-in-out infinite; pointer-events:none;
+}
+.hex.spin{ animation:hexrotate 2.6s linear infinite; }
+.hex.spin .fill{ animation:hexdash 1.6s ease-in-out infinite; }
+@keyframes hexrotate{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+@keyframes hexdash{ 0%{ stroke-dashoffset:228; } 50%{ stroke-dashoffset:40; } 100%{ stroke-dashoffset:228; } }
+@keyframes glowpulse{ 0%,100%{ opacity:.35; } 50%{ opacity:.8; } }
+@keyframes floaty{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
+@keyframes shimmer{ 0%{ transform:translateX(-100%); } 100%{ transform:translateX(320%); } }
+@keyframes risein{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+@keyframes blink{ 50%{ opacity:0; } }
+
+.statusline{
+  font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim);
+  letter-spacing:.06em; text-align:center;
+}
+.statusline .cursor{
+  display:inline-block; width:6px; height:12px; background:var(--accent);
+  margin-left:5px; vertical-align:-2px; animation:blink 1s step-end infinite;
+}
+
+/* ---------- Поиск ---------- */
+.search-input{
+  width:100%; background:var(--glass);
+  border:1px solid var(--line-input); border-radius:10px;
+  color:var(--text); font-family:'Inter',sans-serif; font-size:12.5px;
+  padding:11px 14px 11px 36px; margin-bottom:12px; outline:none;
+  backdrop-filter:blur(10px);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A8E95' stroke-width='1.8'><circle cx='11' cy='11' r='6'/><path d='M15.5 15.5 L20 20' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat; background-position:12px 50%; background-size:15px 15px;
+  transition:border-color .18s, background-color .18s;
+}
+.search-input::placeholder{ color:var(--text-mute); }
+.search-input:focus{ border-color:var(--accent-line); background-color:var(--glass-hover); }
+
+/* ---------- Списки: моделей / категорий / устройств ---------- */
+.modellist,.catlist{
+  flex:1; min-height:0; overflow-y:auto;
+  display:flex; flex-direction:column; gap:8px;
+  background:none; border:none; padding-right:4px; margin-bottom:16px;
+}
+.devlist{ display:flex; flex-direction:column; gap:7px; background:none; border:none; margin-bottom:0; }
+
+.modelrow,.catrow,.devrow{
+  display:flex; align-items:center; gap:13px;
+  padding:14px 16px; border-radius:var(--radius);
+  background:var(--glass); border:1px solid var(--line);
+  backdrop-filter:blur(8px);
+  font-size:13.5px; color:var(--text-2);
+  transition:transform .18s, background-color .18s, border-color .18s, box-shadow .18s;
+}
+.modelrow,.catrow{ cursor:pointer; }
+.modelrow{ font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:500; min-height:52px; white-space:nowrap; }
+.catrow{ font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:500; gap:12px; padding:12px 15px; border-radius:11px; min-height:46px; }
+.modelrow:hover,.catrow:hover{
+  transform:translateY(-1px); background:var(--glass-hover);
+  border-color:var(--accent-line); box-shadow:var(--shadow-row);
+}
+.devrow:hover{ background:var(--glass-hover); }
+
+.modelrow.rec{
+  background:var(--rec-grad);
+  border-color:var(--accent-line); box-shadow:0 4px 18px var(--accent-soft);
+  color:var(--text-hi);
+}
+.modelrow.rec:hover{ box-shadow:0 8px 26px var(--accent-glow); }
+.catrow:has(input:checked){ background:var(--cat-grad); border-color:var(--accent-line); }
+.cat-icon{ display:flex; align-items:center; color:var(--text-mute); transition:color .18s; }
+.catrow:has(input:checked) .cat-icon{ color:var(--accent-hi); }
+
+.modelrow .tag,.catrow .badge{
+  margin-left:auto; white-space:nowrap;
+  font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:500;
+  letter-spacing:.06em; color:var(--accent-hi);
+  background:var(--accent-soft); border:1px solid var(--accent-line);
+  border-radius:6px; padding:4px 9px;
+}
+.catrow .badge{ padding:3px 8px; }
+
+.devrow .dot{
+  width:7px; height:7px; border-radius:50%; flex:0 0 auto;
+  background:var(--err); box-shadow:0 0 8px var(--err-glow);
+}
+.devrow .cls{ margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-mute); }
+
+/* ---------- Радио и чекбоксы ---------- */
+.modelrow input[type="radio"],
+.catrow input[type="checkbox"],
+.restore-toggle input[type="checkbox"]{
+  appearance:none; -webkit-appearance:none;
+  margin:0; flex:0 0 auto; cursor:pointer;
+  transition:background-color .15s, border-color .15s, box-shadow .15s;
+}
+.modelrow input[type="radio"]{
+  width:17px; height:17px; border-radius:50%;
+  border:2px solid var(--ctrl-border-2); background:transparent;
+}
+.modelrow input[type="radio"]:checked{
+  border-color:var(--accent);
+  box-shadow:inset 0 0 0 3px var(--bg), inset 0 0 0 9px var(--accent);
+}
+.catrow input[type="checkbox"],
+.restore-toggle input[type="checkbox"]{
+  width:16px; height:16px; border-radius:5px;
+  border:1.5px solid var(--ctrl-border); background:transparent;
+  display:flex; align-items:center; justify-content:center;
+}
+.catrow input[type="checkbox"]:checked,
+.restore-toggle input[type="checkbox"]:checked{ background:var(--accent); border-color:var(--accent); }
+.catrow input[type="checkbox"]:checked::after,
+.restore-toggle input[type="checkbox"]:checked::after{
+  content:'✓'; color:var(--accent-ink); font-size:11px; font-weight:700; line-height:1;
+}
+
+.restore-toggle{
+  display:flex; align-items:center; gap:10px; align-self:flex-start;
+  margin-top:18px; padding:12px 15px; border-radius:11px;
+  background:var(--accent-soft); border:1px solid var(--accent-line);
+  font-size:12.5px; color:var(--text-3); cursor:pointer; transition:background-color .18s;
+}
+.restore-toggle:hover{ filter:brightness(1.08); }
+
+/* ---------- Кнопки и нижняя панель ---------- */
+.actions{
+  display:flex; align-items:center; justify-content:flex-end; gap:12px;
+  border-top:1px solid var(--line); margin-top:auto; padding-top:16px;
+}
+.btn{
+  font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+  border:none; border-radius:10px; padding:12px 22px; cursor:pointer;
+  transition:background-color .18s, transform .18s, box-shadow .18s, color .18s, border-color .18s;
+}
+.btn-primary{ background:var(--accent); color:var(--accent-ink); box-shadow:0 6px 20px var(--accent-glow); }
+.btn-primary:hover{ background:var(--accent-hover); transform:translateY(-1px); box-shadow:0 10px 26px var(--accent-glow); }
+.btn-ghost{ background:var(--glass-solid); color:var(--text-dim); border:1px solid var(--line-strong); }
+.btn-ghost:hover{ color:var(--text); border-color:var(--ctrl-border); }
+.btn-link{
+  background:none; border:none; color:var(--accent);
+  font-family:'JetBrains Mono',monospace; font-size:11.5px; cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px; transition:color .15s;
+}
+.btn-link:hover{ color:var(--accent-deep); }
+
+/* ---------- Установка ---------- */
+.progwrap{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:28px; width:100%; }
+.progwrap .hex{ width:62px; height:62px; align-self:flex-start; animation:floaty 3.2s ease-in-out infinite; }
+.progwrap .hex .fill{ animation:hexdash 1.9s ease-in-out infinite; }
+.progwrap .hexwrap{ flex:0 0 auto; align-items:flex-start; gap:0; }
+.progwrap .hexwrap::before{ display:none; }
+.stage{ font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:500; color:var(--text); }
+.bar{ position:relative; width:100%; height:8px; background:var(--track); border-radius:4px; overflow:hidden; }
+.bar .fill{
+  height:100%; width:0%; border-radius:4px;
+  background:var(--bar-grad);
+  box-shadow:0 0 14px var(--accent-glow);
+  transition:width .12s linear;
+}
+.bar::after{
+  content:''; position:absolute; top:0; bottom:0; left:0; width:22%;
+  background:linear-gradient(90deg,transparent,var(--shimmer),transparent);
+  animation:shimmer 1.8s linear infinite;
+}
+.mbtext{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); }
+
+.filecheck-list{ margin-top:14px; text-align:left; max-height:210px; overflow-y:auto; display:flex; flex-direction:column; gap:9px; }
+.filecheck-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-mute); transition:color .2s; }
+.filecheck-row.done{ color:var(--ok); }
+.filecheck-icon{ width:16px; display:inline-block; text-align:center; }
+
+/* ---------- Результат ---------- */
+.resultwrap{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:15px; text-align:center; animation:risein .4s ease-out;
+}
+.resulticon{ width:62px; height:62px; }
+.resulttext{ font-size:13px; color:var(--text-3); line-height:1.6; max-width:380px; }
+.resultwrap .installed-list{
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-dim);
+  background:var(--glass); border:1px solid var(--line); border-radius:8px;
+  padding:9px 13px; margin-top:6px; max-height:110px; overflow-y:auto; text-align:left;
+}
+.resultwrap.is-error .resulttext{ max-width:400px; }
+
+/* ---------- Баннер обновления ---------- */
+.update-banner{
+  background:linear-gradient(90deg,var(--accent),var(--accent-hi));
+  color:var(--accent-ink); font-size:12px; font-weight:600;
+  padding:9px 18px; display:flex; align-items:center; justify-content:space-between;
+}
+html[data-theme="light"] .update-banner{ background:linear-gradient(90deg,#E97600,#F7A94E); }
+.update-banner .btn-link{
+  color:var(--accent-ink); font-family:'Inter',sans-serif; font-size:11px; font-weight:600;
+  text-decoration:none; background:rgba(26,18,4,.12); border-radius:6px; padding:4px 10px;
+}
+.update-banner .btn-link:hover{ background:rgba(26,18,4,.24); color:var(--accent-ink); }

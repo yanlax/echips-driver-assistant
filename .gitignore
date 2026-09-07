@@ -1,0 +1,17 @@
+# Rust / Tauri
+/src-tauri/target/
+/src-tauri/gen/schemas/*.d.ts
+
+# macOS
+.DS_Store
+
+# Временные файлы старого DriverInstallerKit (Inno Setup)
+_build/
+__pycache__/
+*.pyc
+
+# Node (на случай, если когда-нибудь появится)
+node_modules/
+
+# Логи
+*.log
