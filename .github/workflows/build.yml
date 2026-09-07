@@ -1,11 +1,19 @@
 name: Build Windows EXE
 
 # Собирает .exe автоматически при каждом push в main, а также вручную
-# по кнопке "Run workflow" на вкладке Actions в GitHub.
+# по кнопке "Run workflow" на вкладке Actions в GitHub. Если пуш — это
+# тег вида v1.2.3, дополнительно публикует готовый .exe в GitHub Releases.
 on:
   push:
     branches: [main]
+    tags: ['v*']
   workflow_dispatch:
+
+# Нужно явно разрешить workflow писать в репозиторий (создавать релизы) —
+# токен GITHUB_TOKEN по умолчанию может быть read-only в зависимости от
+# настроек репозитория.
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -48,3 +56,15 @@ jobs:
         with:
           name: EchipsDriverAssistant
           path: "src-tauri/target/release/Echips Driver Assistant.exe"
+
+      - name: Публикация в GitHub Releases
+        # Срабатывает ТОЛЬКО если пуш был тегом (git tag v5.0.1 && git push --tags),
+        # а не при обычном push в main. Использует встроенный GITHUB_TOKEN —
+        # никакой личной авторизации/gh auth login для этого не нужно,
+        # 403-ошибки при локальном "gh release create" эта публикация не касаются.
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "src-tauri/target/release/Echips Driver Assistant.exe"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
