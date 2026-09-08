@@ -239,10 +239,6 @@
     "display_name": "Taganay A100ER",
     "yandex_public_key": "https://disk.360.yandex.ru/d/Obw09C3rxdpgVg"
   },
-  "test": {
-    "display_name": "test",
-    "yandex_public_key": "https://disk.360.yandex.ru/d/HRsymBHSxVzmIg"
-  },
   "NR156G-L": {
     "display_name": "Argentum NR156G-L",
     "yandex_public_key": "https://disk.360.yandex.ru/d/vTYIU-tOusRj7A"
@@ -298,6 +294,46 @@
   "K24": {
     "display_name": "Monoblock K24",
     "yandex_public_key": "https://disk.360.yandex.ru/d/6rgxr5b7UOxGLQ"
+  },
+  "A23": {
+    "display_name": "Monoblock A23",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/KzRWCefTA95MHg"
+  },
+  "K4": {
+    "display_name": "Monoblock K4",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/RDKXGnALRM5cgQ"
+  },
+  "K5": {
+    "display_name": "Monoblock K5",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/0OfGqNYawy6kcg"
+  },
+  "B27-H": {
+    "display_name": "Monoblock B27-H",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/0OfGqNYawy6kcg"
+  },
+  "EM1": {
+    "display_name": "MiniPC EM1",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/kQp7GcV02Z6enA"
+  },
+  "Casual": {
+    "display_name": "Casual 2021",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/cyChB26q7fmsOQ"
+  },
+  "Worker": {
+    "display_name": "Worker 2021",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/47eR4KMrd8QG-A"
+  },
+  "Like": {
+    "display_name": "Like",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/ChngCwXQUKDs-w"
+  },
+  "Lite": {
+    "display_name": "Lite J4005",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/Onj8JxgImtkyWQ"
+  },
+  "NX140A": {
+    "display_name": "Lite2 NX140A",
+    "yandex_public_key": "https://disk.360.yandex.ru/d/mBGwJQzutRh8DA"
   },
   "_universal": {
     "yandex_public_key": "https://disk.360.yandex.ru/d/33I2BtBmkBCJVQ"
